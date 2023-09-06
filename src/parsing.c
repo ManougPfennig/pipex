@@ -6,28 +6,23 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:28:23 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/05 18:57:44 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/06 14:22:06 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
-int	check_open(char *file)
+void	check_open(char **av)
 {
-	int	fd;
-
-	fd = open(file, O_RDONLY);
-	if (fd != -1)
-		close(fd);
-	else
-		exit_msg("could not open ", file);
-	return (1);
+	if (access(av[1], F_OK) != 0)
+		exit_msg("Cannot find input file -> ", av[1]);
+	if (access(av[4], F_OK) != 0)
+		exit_msg("Cannot find output file -> ", av[4]);
 }
 
 void	parsing(int ac, char **av)
 {
 	if (ac != 5)
 		exit_msg("Unvalid amount of arguments", NULL);
-	check_open(av[1]);
-	check_open(av[4]);
+	check_open(av);
 }
