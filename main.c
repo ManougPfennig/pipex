@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/31 17:53:50 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/06 19:40:22 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/07 17:07:34 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,24 @@ void	make_pipe(int pipefd[2])
 		exit_msg("Pipe creation failed", NULL);
 }
 
+pid_t	do_fork(void)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
+		exit_msg("Fork creation failed", NULL);
+	return (pid);
+}
+
 int	main(int ac, char **av)
 {
+	pid_t	pid;
 	int		pipefd[2];
-	char	*argv[2];
 
-	argv[0] = "-l";
-	argv[1] = NULL;
-	execve("/bin/wc", argv, NULL);
-	exit(EXIT_SUCCESS);
 	parsing(ac, av);
 	make_pipe(pipefd);
-	pipex(av, pipefd);
+	pid = do_fork();
+	pipex(av, pipefd, pid);
 	return (0);
 }
