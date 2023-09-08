@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 18:07:06 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/08 12:10:05 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/08 18:18:22 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,7 @@ void	cmd1(char **av, int pipefd[2], int fdin, int saved[2])
 
 	command = ft_split(av[2], ' ');
 	path = ft_strjoin("/bin/", command[0]);
-	pid = fork();
-	if (pid == 0)
+	if (pid > 0)
 	{
 		do_dup2(fdin, STDIN_FILENO);
 		do_dup2(pipefd[1], STDOUT_FILENO);
@@ -48,25 +47,20 @@ void	cmd1(char **av, int pipefd[2], int fdin, int saved[2])
 			ft_free_tab(command, path);
 			do_dup2(saved[0], STDIN_FILENO);
 			do_dup2(saved[1], STDOUT_FILENO);
-			exit_msg("Unvalid command used", NULL);
+			exit_msg("Unvalid command used\n", NULL);
 		}
 	}
-	do_dup2(saved[0], STDIN_FILENO);
-	do_dup2(saved[1], STDOUT_FILENO);
 	ft_free_tab(command, path);
-	exit(EXIT_SUCCESS);
 }
 
 void	cmd2(char **av, int pipefd[2], int fdout, int saved[2])
 {
 	char	**command;
 	char	*path;
-	pid_t	pid;
 
 	command = ft_split(av[3], ' ');
 	path = ft_strjoin("/bin/", command[0]);
-	pid = fork();
-	if (pid == 0)
+	if (pid > 0)
 	{
 		do_dup2(pipefd[0], STDIN_FILENO);
 		do_dup2(fdout, STDOUT_FILENO);
@@ -75,24 +69,20 @@ void	cmd2(char **av, int pipefd[2], int fdout, int saved[2])
 			ft_free_tab(command, path);
 			do_dup2(saved[0], STDIN_FILENO);
 			do_dup2(saved[1], STDOUT_FILENO);
-			exit_msg("Unvalid command used", NULL);
+			exit_msg("Unvalid command used\n", NULL);
 		}
 	}
-	do_dup2(saved[0], STDIN_FILENO);
-	do_dup2(saved[1], STDOUT_FILENO);
 	ft_free_tab(command, path);
-	exit(EXIT_SUCCESS);
 }
 
-void	pipex(char **av, int pipefd[2], int filesfd[2], int saved[2])
+int	pipex(char **av, int pipefd[2], int filesfd[2], int saved[2])
 {
-//	int		i;
 	pid_t	pid;
 
-//	i = 0;
 	pid = fork();
-	if (pid == 0)
-		cmd1(av, pipefd, filesfd[0], saved);
-	if (pid > 0)
-		cmd2(av, pipefd, filesfd[1], saved);
+	cmd1(av, pipefd, filesfd[0], saved);
+	do_dup2(saved[0], STDIN_FILENO);
+	do_dup2(saved[1], STDOUT_FILENO);
+	cmd2(av, pipefd, filesfd[1], saved)
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/31 17:53:50 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/08 11:59:23 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/08 17:47:49 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,10 @@ int	main(int ac, char **av)
 	filesfd[1] = do_open(ft_lastav(av), O_WRONLY);
 	saved[0] = dup(STDIN_FILENO);
 	saved[1] = dup(STDOUT_FILENO);
-	pipex(av, pipefd, filesfd, saved);
-	return (0);
+	if (pipex(av, pipefd, filesfd, saved))
+	{
+		do_dup2(saved[0], STDIN_FILENO);
+		do_dup2(saved[1], STDOUT_FILENO);
+		exit_msg("Unvalid command used", NULL);
+	}
 }

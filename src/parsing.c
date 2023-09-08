@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:28:23 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/08 09:48:36 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/08 17:06:32 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	check_files(char **av)
 	close(fd);
 	if (access(ft_lastav(av), F_OK) != 0)
 		return (1);
-	fd = open(ft_lastav(av), O_RDONLY);
+	fd = open(ft_lastav(av), O_RDONLY | O_TRUNC);
 	if (fd == -1)
 		exit_msg("Cannot open output file -> ", ft_lastav(av));
 	close(fd);
@@ -55,6 +55,8 @@ void	parsing(int ac, char **av)
 {
 	if (ac != 5)
 		exit_msg("Unvalid amount of arguments", NULL);
+	if (ft_strlen(av[2]) == 0 || ft_strlen(av[3]) == 0)
+		exit_msg("Unvalid command used", NULL);
 	if (check_files(av))
 		touch_output(ft_lastav(av));
 }
