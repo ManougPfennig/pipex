@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/31 17:53:50 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/07 17:07:34 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/08 11:59:23 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,28 @@ pid_t	do_fork(void)
 	return (pid);
 }
 
+int	do_open(char *str, int oflag)
+{
+	int	fd;
+
+	fd = open(str, oflag);
+	if (fd == -1)
+		exit_msg("Failed to open file", str);
+	return (fd);
+}
+
 int	main(int ac, char **av)
 {
-	pid_t	pid;
 	int		pipefd[2];
+	int		filesfd[2];
+	int		saved[2];
 
 	parsing(ac, av);
 	make_pipe(pipefd);
-	pid = do_fork();
-	pipex(av, pipefd, pid);
+	filesfd[0] = do_open(av[1], O_RDONLY);
+	filesfd[1] = do_open(ft_lastav(av), O_WRONLY);
+	saved[0] = dup(STDIN_FILENO);
+	saved[1] = dup(STDOUT_FILENO);
+	pipex(av, pipefd, filesfd, saved);
 	return (0);
 }

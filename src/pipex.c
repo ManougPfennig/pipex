@@ -6,79 +6,93 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 18:07:06 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/07 18:10:10 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/08 12:10:05 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
+void	print_tab(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+	{
+		printf("%s\n", tab[i]);
+		i++;
+	}
+}
+
 void	do_dup2(int fd, int replaced)
 {
 	if (dup2(fd, replaced) == -1)
-		exit_msg("Dup2 failed", NULL);
+		exit_msg("dup2 failed", NULL);
 }
 
-int	do_open(char *str, int oflag)
+void	cmd1(char **av, int pipefd[2], int fdin, int saved[2])
 {
-	int	fd;
-
-	fd = open(str, oflag);
-	if (fd == -1)
-		exit_msg("Failed to open file", str);
-	return (fd);
-}
-
-void	cmd1(char **av, int pipefd[2], int fdin)
-{
-	char	**command1;
+	char	**command;
 	char	*path;
+	pid_t	pid;
 
-	do_dup2(fdin, STDIN_FILENO);
-	do_dup2(pipefd[1], STDOUT_FILENO);
-	command1 = ft_split(av[2], ' ');
-	path = ft_strjoin("/bin/", command1[0]);
-	if (execve(path, (command1 + 1), NULL) == -1)
-	{
-		ft_free_tab(command1, path);
-		close(pipefd[0]);
-		close(pipefd[1]);
-		close(fdin);
-		exit_msg("Unvalid command used", NULL);
-	}
-	ft_free_tab(command1, path);
-}
-
-void	cmd2(char **av, int pipefd[2], int fdout)
-{
-	char	**command2;
-	char	*path;
-
-	do_dup2(pipefd[0], STDIN_FILENO);
-	do_dup2(fdout, STDOUT_FILENO);
-	command2 = ft_split(av[3], ' ');
-	path = ft_strjoin("/bin/", command2[0]);
-	if (execve(path, (command2 + 1), NULL) == -1)
-	{
-		ft_free_tab(command2, path);
-		close(pipefd[0]);
-		close(pipefd[1]);
-		close(fdout);
-		exit_msg("Unvalid command used", NULL);
-	}
-	ft_free_tab(command2, path);
-}
-
-void	pipex(char **av, int pipefd[2], pid_t pid)
-{
-	int		fdin;
-	int		fdout;
-
-	fdin = do_open(av[1], O_RDONLY);
-	fdout = do_open(ft_lastav(av), O_WRONLY);
-	if (pid > 0)
-		cmd1(av, pipefd, fdin);
-	do_dup2(STDIN_FILENO, fdin);
-	do_dup2(STDOUT_FILENO, pipefd[1]);
+	command = ft_split(av[2], ' ');
+	path = ft_strjoin("/bin/", command[0]);
+	pid = fork();
 	if (pid == 0)
-		cmd2(av, pipefd, fdout);
+	{
+		do_dup2(fdin, STDIN_FILENO);
+		do_dup2(pipefd[1], STDOUT_FILENO);
+		if (execve(path, command, NULL) == -1)
+		{
+			ft_free_tab(command, path);
+			do_dup2(saved[0], STDIN_FILENO);
+			do_dup2(saved[1], STDOUT_FILENO);
+			exit_msg("Unvalid command used", NULL);
+		}
+	}
+	do_dup2(saved[0], STDIN_FILENO);
+	do_dup2(saved[1], STDOUT_FILENO);
+	ft_free_tab(command, path);
+	exit(EXIT_SUCCESS);
+}
+
+void	cmd2(char **av, int pipefd[2], int fdout, int saved[2])
+{
+	char	**command;
+	char	*path;
+	pid_t	pid;
+
+	command = ft_split(av[3], ' ');
+	path = ft_strjoin("/bin/", command[0]);
+	pid = fork();
+	if (pid == 0)
+	{
+		do_dup2(pipefd[0], STDIN_FILENO);
+		do_dup2(fdout, STDOUT_FILENO);
+		if (execve(path, command, NULL) == -1)
+		{
+			ft_free_tab(command, path);
+			do_dup2(saved[0], STDIN_FILENO);
+			do_dup2(saved[1], STDOUT_FILENO);
+			exit_msg("Unvalid command used", NULL);
+		}
+	}
+	do_dup2(saved[0], STDIN_FILENO);
+	do_dup2(saved[1], STDOUT_FILENO);
+	ft_free_tab(command, path);
+	exit(EXIT_SUCCESS);
+}
+
+void	pipex(char **av, int pipefd[2], int filesfd[2], int saved[2])
+{
+//	int		i;
+	pid_t	pid;
+
+//	i = 0;
+	pid = fork();
+	if (pid == 0)
+		cmd1(av, pipefd, filesfd[0], saved);
+	if (pid > 0)
+		cmd2(av, pipefd, filesfd[1], saved);
 }

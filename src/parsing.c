@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:28:23 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/07 18:28:08 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/08 09:48:36 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,22 +24,12 @@ char	*ft_lastav(char **av)
 
 void	touch_output(char *str)
 {
-	pid_t	pid;
-	char	*cmd[2];
+	int	fd;
 
-	ft_printf("making file");
 	if (ft_strlen(str) == 0)
 		exit_msg("Invalid output name", NULL);
-	cmd[0] = str;
-	cmd[1] = NULL;
-	pid = fork();
-	if (pid > 0)
-	{
-		if (execve("/bin/touch", cmd, NULL) == -1)
-			exit_msg("File creation failed", NULL);
-	}
-	else
-		return ;
+	fd = open(str, O_CREAT, 0666);
+	close(fd);
 }
 
 int	check_files(char **av)
