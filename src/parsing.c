@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:28:23 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/09 19:35:56 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/09 19:39:43 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	parsing(int ac, char **av)
 	while (av[i])
 	{
 		if (ft_strlen(av[i]) == 0)
-		exit_msg("Unvalid argument length", NULL);
+			exit_msg("Unvalid argument length", NULL);
 		i++;
 	}
 	if (check_files(av))

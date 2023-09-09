@@ -6,12 +6,11 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 18:07:06 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/09 19:33:33 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/09 19:40:53 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
-
 
 void	first_command(char *path, char **arg, int pipefd[2], int filesfd[2])
 {
@@ -41,7 +40,7 @@ void	last_command(char *path, char **arg, int pipefd[2], int filesfd[2])
 		exit(EXIT_FAILURE);
 }
 
-int	pipex(char **av, int pipefd[2], int filesfd[2], int saved[2])
+void	pipex(char **av, int pipefd[2], int filesfd[2], int saved[2])
 {
 	char	**arg;
 	char	*path;
@@ -57,7 +56,6 @@ int	pipex(char **av, int pipefd[2], int filesfd[2], int saved[2])
 	check_execve(path, arg, &error, saved);
 	while (++i && av[i + 2] != NULL)
 	{
-		printf("did loop wouptidou\n");
 		arg_prep(&path, &arg, av[i]);
 		pid = do_fork();
 		if (pid == 0)
@@ -69,5 +67,4 @@ int	pipex(char **av, int pipefd[2], int filesfd[2], int saved[2])
 	if (pid == 0)
 		last_command(path, arg, pipefd, filesfd);
 	check_execve(path, arg, &error, saved);
-	return (0);
 }
