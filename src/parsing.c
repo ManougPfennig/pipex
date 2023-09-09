@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:28:23 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/08 17:06:32 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/09 19:35:56 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,17 @@ int	check_files(char **av)
 
 void	parsing(int ac, char **av)
 {
-	if (ac != 5)
+	int	i;
+
+	i = 0;
+	if (ac < 5)
 		exit_msg("Unvalid amount of arguments", NULL);
-	if (ft_strlen(av[2]) == 0 || ft_strlen(av[3]) == 0)
-		exit_msg("Unvalid command used", NULL);
+	while (av[i])
+	{
+		if (ft_strlen(av[i]) == 0)
+		exit_msg("Unvalid argument length", NULL);
+		i++;
+	}
 	if (check_files(av))
 		touch_output(ft_lastav(av));
 }
