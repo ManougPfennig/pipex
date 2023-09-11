@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/09 18:45:58 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/09 19:39:51 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/11 15:40:19 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,14 +44,16 @@ int	do_open(char *str, int oflag)
 	return (fd);
 }
 
-void	check_execve(char *path, char **arg, int *error, int saved[2])
+void	check_execve(char **arg, t_fd fd)
 {
-	ft_free_tab(arg, path);
-	waitpid(0, error, 0);
-	if (*error)
+	int	error;
+
+	ft_free_tab(arg, fd.test);
+	waitpid(0, &error, 0);
+	if (error != 0)
 	{
-		do_dup2(saved[0], STDIN_FILENO);
-		do_dup2(saved[1], STDOUT_FILENO);
-		exit_msg("Unvalid command used\n", NULL);
+		do_dup2(fd.saved[0], STDIN_FILENO);
+		do_dup2(fd.saved[1], STDOUT_FILENO);
+		exit(EXIT_FAILURE);
 	}
 }

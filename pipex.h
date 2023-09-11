@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/03 17:24:47 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/09 19:40:46 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/11 16:23:30 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,20 @@
 # include "./ft_printf/ft_printf.h"
 # include "./libft/libft.h"
 
-void	parsing(int ac, char **av);
-void	exit_msg(char *str, char *str2);
-void	pipex(char **av, int pipefd[2], int filesfd[2], int saved[2]);
-void	check_execve(char *path, char **arg, int *error, int saved[2]);
+typedef struct s_data {
+	int		pipe[2];
+	int		pipe2[2];
+	int		saved[2];
+	int		infile;
+	int		outfile;
+	char	**path;
+	char	*test;
+}				t_fd;
+
+void	parsing(int ac, char **av, t_fd fd);
+void	exit_msg(char *str, char *str2, char **to_free);
+void	pipex(char **av, t_fd fd);
+void	check_execve(char **arg, t_fd fd);
 void	arg_prep(char **path, char ***arg, char *split);
 void	do_dup2(int fd, int replaced);
 pid_t	do_fork(void);

@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/09 19:20:04 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/09 19:39:34 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/10 13:26:50 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,5 +15,5 @@
 void	arg_prep(char **path, char ***arg, char *split)
 {
 	*arg = ft_split(split, ' ');
-	*path = ft_strjoin("/bin/", *arg[0]);
+	*path = ft_strjoin("/usr/bin/", *arg[0]);
 }
