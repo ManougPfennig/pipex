@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:28:23 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/11 16:26:51 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/11 23:17:34 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	check_files(char **av)
 	return (0);
 }
 
-int	check_commands(char *av, t_fd fd)
+int	check_commands(char *av, t_fd *fd)
 {
 	int		i;
 	int		check;
@@ -62,21 +62,22 @@ int	check_commands(char *av, t_fd fd)
 	check = 0;
 	path = NULL;
 	arg = ft_split(av, ' ');
-	while (fd.path[i])
+	while (fd->path[i])
 	{
-		path = ft_strjoin(fd.path[i], arg[0]);
+		path = ft_strjoin(fd->path[i], arg[0]);
 		if (access(path, F_OK) == 0)
 			check++;
 		i++;
 		ft_free_tab(NULL, path);
+		path = NULL;
 	}
-	ft_free_tab(arg, NULL);
+	ft_free_tab(arg, path);
 	if (check)
 		return (1);
-	return(0);
+	return (0);
 }
 
-void	parsing(int ac, char **av, t_fd fd)
+void	parsing(int ac, char **av, t_fd *fd)
 {
 	int	i;
 
@@ -88,13 +89,13 @@ void	parsing(int ac, char **av, t_fd fd)
 	while (av[i])
 	{
 		if (ft_strlen(av[i]) == 0)
-			exit_msg("Unvalid argument length", NULL, NULL);
+			exit_msg("Unvalid argument", NULL, NULL);
 		i++;
 	}
-	fd.path = ft_split("/usr/local/sbin/:/usr/local/bin/:/usr/sbin/:/usr/bin/:\
+	fd->path = ft_split("/usr/local/sbin/:/usr/local/bin/:/usr/sbin/:/usr/bin/:\
 	/sbin/:/bin/:/usr/games/:/usr/local/games/:/snap/bin/:/snap/bin/", ':');
 	if (check_commands(av[2], fd) == 0)
-		exit_msg("Unvalid command used", NULL, fd.path);
+		exit_msg("Unvalid command used", NULL, fd->path);
 	if (check_commands(av[3], fd) == 0)
-		exit_msg("Unvalid command used", NULL, fd.path);
+		exit_msg("Unvalid command used", NULL, fd->path);
 }

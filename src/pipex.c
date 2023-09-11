@@ -6,37 +6,28 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 18:07:06 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/11 16:41:59 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/11 23:03:39 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
-int	loop_test(char **arg, t_fd fd)
+int	loop_test(char **arg, t_fd *fd)
 {
 	int	i;
 
 	i = 0;
-	while (fd.path[i])
+	while (fd->path[i])
 	{
-		fd.test = ft_strjoin(fd.path[i], arg[0]);
-		if (execve(fd.test, arg, NULL) == -1)
+		fd->test = ft_strjoin(fd->path[i], arg[0]);
+		if (execve(fd->test, arg, NULL) == -1)
 			i++;
-		ft_free_tab(NULL, fd.test);
+		ft_free_tab(NULL, fd->test);
 	}
 	exit(EXIT_FAILURE);
 }
 
-void	ft_print_tab(char **tab)
-{
-	while (tab)
-	{
-		printf("%s\n", *tab);
-		tab++;
-	}
-}
-
-int	first_command(char **arg, t_fd fd)
+int	first_command(char **arg, t_fd *fd)
 {
 	pid_t	pid;
 	int		cp;
@@ -44,18 +35,18 @@ int	first_command(char **arg, t_fd fd)
 	pid = do_fork();
 	if (pid == 0)
 	{
-		close(fd.pipe[0]);
-		do_dup2(fd.infile, STDIN_FILENO);
-		do_dup2(fd.pipe[1], STDOUT_FILENO);
+		close(fd->pipe[0]);
+		do_dup2(fd->infile, STDIN_FILENO);
+		do_dup2(fd->pipe[1], STDOUT_FILENO);
 		loop_test(arg, fd);
 	}
-	cp = dup(fd.pipe[0]);
-	close(fd.pipe[0]);
-	close(fd.pipe[1]);
+	cp = dup(fd->pipe[0]);
+	close(fd->pipe[0]);
+	close(fd->pipe[1]);
 	return (cp);
 }
 
-void	last_command(char **arg, t_fd fd, int fd_cp)
+void	last_command(char **arg, t_fd *fd, int fd_cp)
 {
 	pid_t	pid;
 
@@ -63,23 +54,21 @@ void	last_command(char **arg, t_fd fd, int fd_cp)
 	if (pid == 0)
 	{
 		do_dup2(fd_cp, STDIN_FILENO);
-		do_dup2(fd.outfile, STDOUT_FILENO);
+		do_dup2(fd->outfile, STDOUT_FILENO);
 		loop_test(arg, fd);
 	}
 	close(fd_cp);
 }
 
-void	pipex(char **av, t_fd fd)
+void	pipex(char **av, t_fd *fd)
 {
 	char	**arg;
 	int		fd_cp;
 
 	arg = ft_split(av[2], ' ');
 	fd_cp = first_command(arg, fd);
-	ft_free_tab(NULL, fd.test);
 	check_execve(arg, fd);
 	arg = ft_split(av[3], ' ');
 	last_command(arg, fd, fd_cp);
-	ft_free_tab(NULL, fd.test);
 	check_execve(arg, fd);
 }
