@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:28:23 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/11 23:17:34 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/12 00:29:20 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,33 +22,27 @@ char	*ft_lastav(char **av)
 	return (av[i - 1]);
 }
 
-void	touch_output(char *str)
+void	check_files(t_fd *fd, char **av)
 {
-	int	fd;
-
-	if (ft_strlen(str) == 0)
-		exit_msg("Invalid output name", NULL, NULL);
-	fd = open(str, O_CREAT, 0666);
-	close(fd);
-}
-
-int	check_files(char **av)
-{
-	int	fd;
+	int	temp;
 
 	if (access(av[1], F_OK) != 0)
-		exit_msg("Input file does not exist -> ", av[1], NULL);
-	fd = open(av[1], O_RDONLY);
-	if (fd == -1)
-		exit_msg("Cannot open input file -> ", av[1], NULL);
-	close(fd);
-	if (access(ft_lastav(av), F_OK) != 0)
-		return (1);
-	fd = open(ft_lastav(av), O_RDONLY | O_TRUNC);
-	if (fd == -1)
+	{
+		ft_printf("Input file does not exist -> %s\n", av[1]);
+		second_pipex(fd, av);
+	}
+	temp = open(av[1], O_RDONLY);
+	if (temp == -1)
+	{
+		close(temp);
+		ft_printf("Cannot open input file -> %s\n", av[1]);
+		second_pipex(fd, av);
+	}
+	close(temp);
+	temp = open(ft_lastav(av), O_WRONLY | O_TRUNC);
+	if (temp == -1)
 		exit_msg("Cannot write to output file -> ", ft_lastav(av), NULL);
-	close(fd);
-	return (0);
+	close(temp);
 }
 
 int	check_commands(char *av, t_fd *fd)
@@ -84,8 +78,7 @@ void	parsing(int ac, char **av, t_fd *fd)
 	i = 0;
 	if (ac != 5)
 		exit_msg("Unvalid amount of arguments", NULL, NULL);
-	if (check_files(av))
-		touch_output(ft_lastav(av));
+	check_files(fd, av);
 	while (av[i])
 	{
 		if (ft_strlen(av[i]) == 0)
