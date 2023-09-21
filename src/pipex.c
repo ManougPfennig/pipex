@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 18:07:06 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/11 23:03:39 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/21 11:57:00 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int	loop_test(char **arg, t_fd *fd)
 	while (fd->path[i])
 	{
 		fd->test = ft_strjoin(fd->path[i], arg[0]);
+		execve(arg[0], arg, NULL);
 		if (execve(fd->test, arg, NULL) == -1)
 			i++;
 		ft_free_tab(NULL, fd->test);

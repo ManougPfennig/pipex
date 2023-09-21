@@ -6,7 +6,7 @@
 /*   By: mapfenni <mapfenni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:28:23 by mapfenni          #+#    #+#             */
-/*   Updated: 2023/09/12 00:29:20 by mapfenni         ###   ########.fr       */
+/*   Updated: 2023/09/21 15:35:37 by mapfenni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ int	check_commands(char *av, t_fd *fd)
 	check = 0;
 	path = NULL;
 	arg = ft_split(av, ' ');
+	if (access(arg[0], F_OK) == 0)
+		check++;
 	while (fd->path[i])
 	{
 		path = ft_strjoin(fd->path[i], arg[0]);
@@ -88,7 +90,11 @@ void	parsing(int ac, char **av, t_fd *fd)
 	fd->path = ft_split("/usr/local/sbin/:/usr/local/bin/:/usr/sbin/:/usr/bin/:\
 	/sbin/:/bin/:/usr/games/:/usr/local/games/:/snap/bin/:/snap/bin/", ':');
 	if (check_commands(av[2], fd) == 0)
-		exit_msg("Unvalid command used", NULL, fd->path);
+	{
+		ft_printf("Error : Unvalid command used");
+		ft_free_tab(fd->path, NULL);
+		second_pipex(fd, av);
+	}
 	if (check_commands(av[3], fd) == 0)
 		exit_msg("Unvalid command used", NULL, fd->path);
 }
